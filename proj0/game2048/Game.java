@@ -60,13 +60,13 @@ public class Game {
      *  or "Right"). */
     private Side keyToSide(String key) {
         switch (key) {
-            case "Up": case "\u2191":
+            case "Up": case "\u2191": case "W" :
                 return NORTH;
-            case "Down": case "\u2193":
+            case "Down": case "\u2193": case "S":
                 return SOUTH;
-            case "Left": case "\u2190":
+            case "Left": case "\u2190": case "A":
                 return WEST;
-            case "Right": case "\u2192":
+            case "Right": case "\u2192": case "D":
                 return EAST;
             default:
                 throw new IllegalArgumentException("unknown key designation");
