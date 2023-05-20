@@ -1,5 +1,7 @@
 package Arithmetic;
 
+import java.util.Iterator;
+
 /** Simple Arithmetic Class.
  * @author Josh Hug
  * */

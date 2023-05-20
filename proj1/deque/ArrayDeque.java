@@ -2,12 +2,12 @@ package deque;
 
 import java.util.Iterator;
 
-public class ArrayDeque<T> implements Deque<T> {
-    public int num;
-    public int size;
-    public int nextFirst;
-    public int nextLast;
-    public T[] items;
+public class ArrayDeque<T> implements Deque<T>, Iterable<T> {
+    private int num;
+    private int size;
+    private int nextFirst;
+    private int nextLast;
+    private T[] items;
     public ArrayDeque(){
         size=0;
         num=8;
@@ -148,30 +148,18 @@ public class ArrayDeque<T> implements Deque<T> {
     }
     @Override
     public boolean equals(Object o){
-        if(o instanceof ArrayDeque){
-            ArrayDeque tmp=(ArrayDeque) o;
+        if(o instanceof Deque){
+            Deque tmp=(Deque) o;
             if(tmp.size()!=size()){
                 return false;
             }
-            int tmp_start=(tmp.nextFirst+1)%tmp.num;
-            int this_start=(nextFirst+1)%num;
             for(int i=0;i<size();i++){
-                if(get(this_start)!=tmp.get(tmp_start)){
+                if(tmp.get(i)!=get(i)){
                     return false;
                 }
-                tmp_start=(tmp_start+1)%tmp.num;
-                this_start=(this_start+1)%num;
             }
             return true;
         }
         return false;
-    }
-
-    public static void main(String[] args) {
-        ArrayDeque<Integer> t=new ArrayDeque<>();
-        for(int i=0;i<32;i++){
-            t.addLast(i);
-            System.out.println(t.get(i));
-        }
     }
 }
