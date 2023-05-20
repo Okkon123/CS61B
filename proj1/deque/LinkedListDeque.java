@@ -49,13 +49,13 @@ public class LinkedListDeque<T> implements Deque<T> {
         sentinel.prev=tmp;
         size+=1;
     }
-    @Override
-    public boolean isEmpty(){
-        if(size==0){
-            return true;
-        }
-        return false;
-    }
+//    @Override
+//    public boolean isEmpty(){
+//        if(size==0){
+//            return true;
+//        }
+//        return false;
+//    }
 
     @Override
     public int size(){
