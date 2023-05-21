@@ -1,5 +1,6 @@
 package deque;
 
+import jh61b.junit.In;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
@@ -133,7 +134,33 @@ public class ArrayDequeTest {
         for (double i = 999999; i > 500000; i--) {
             assertEquals("Should have the same value", i, (double) lld1.removeLast(), 0.0);
         }
+    }
 
+    @Test
+    public void equalTest1(){
+        ArrayDeque<Integer> t1 = new ArrayDeque<>();
+        ArrayDeque<Integer> t2 = new ArrayDeque<>();
+        LinkedListDeque<Integer> l1 = new LinkedListDeque<>();
+        for(int i =0;i<500;i++){
+            t1.addLast(i);
+            t2.addLast(i);
+            l1.addLast(i);
+        }
+        assertEquals(true,t1.equals(t2));
+        assertEquals(true,t1.equals(l1));
+    }
 
+    @Test
+    public void equalTest2(){
+        ArrayDeque<String> t1 = new ArrayDeque<>();
+        ArrayDeque<String> t2 = new ArrayDeque<>();
+        LinkedListDeque<String> l1 = new LinkedListDeque<>();
+        for(int i =0;i<500;i++){
+            t1.addLast("i");
+            t2.addLast("i");
+            l1.addLast("i");
+        }
+        assertTrue(t1.equals(t2));
+        assertTrue(t1.equals(l1));
     }
 }
