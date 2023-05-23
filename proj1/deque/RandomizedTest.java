@@ -6,9 +6,9 @@ import java.util.Deque;
 import java.util.LinkedList;
 
 import static org.junit.Assert.*;
-public class randomizedTest {
+public class RandomizedTest {
     @Test
-    public void test(){
+    public void test() {
         Deque<Integer> L = new LinkedList<>();
         LinkedListDeque<Integer> B = new LinkedListDeque<>();
         int N = 100000;
@@ -26,21 +26,21 @@ public class randomizedTest {
                 B.addLast(randVal);
             } else if (operationNumber == 2) {
                 //removeLast
-                if(L.size() > 0){
+                if (L.size() > 0) {
                     int remove = L.removeLast();
                     int remove1 = B.removeLast();
-                    assertEquals(remove,remove1);
+                    assertEquals(remove, remove1);
                 }
             } else if (operationNumber == 3) {
                 //removeFirst
-                if(L.size() > 0){
+                if (L.size() > 0) {
                     int remove = L.removeLast();
                     int remove1 = B.removeLast();
-                    assertEquals(remove,remove1);
+                    assertEquals(remove, remove1);
                 }
             } else if (operationNumber == 4) {
                 //size
-                assertEquals(L.size(),B.size());
+                assertEquals(L.size(), B.size());
             }
         }
     }
