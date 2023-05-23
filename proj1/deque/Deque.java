@@ -1,10 +1,10 @@
 package deque;
 
-public interface Deque <T> {
+public interface Deque<T> {
     public void addFirst(T x);
     public void addLast(T x);
-    default boolean isEmpty(){
-        if(size()==0){
+    default boolean isEmpty() {
+        if (size() == 0) {
             return true;
         }
         return false;

@@ -3,10 +3,10 @@ package deque;
 public class AListNoResizing<Item> {
     private Item[] items;
     private int size;
-
+    private static final int ORIN_SIZE = 1000;
     /** Creates an empty list. */
     public AListNoResizing() {
-        items = (Item[]) new Object[1000];
+        items = (Item[]) new Object[ORIN_SIZE];
         size = 0;
     }
 
