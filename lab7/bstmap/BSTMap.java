@@ -100,13 +100,13 @@ public class BSTMap<K extends Comparable<K>, V> implements Map61B<K, V> {
             return tmp;
         }
 
-        void printInorder() {
+        void printInOrder() {
             if (this.left != null) {
-                this.left.printInorder();
+                this.left.printInOrder();
             }
             System.out.println(this.key);
             if (this.right != null) {
-                this.right.printInorder();
+                this.right.printInOrder();
             }
         }
 
@@ -174,11 +174,11 @@ public class BSTMap<K extends Comparable<K>, V> implements Map61B<K, V> {
         }
     }
 
-    public void printInorder() {
-        root.printInorder();
+    public void printInOrder() {
+        root.printInOrder();
     }
 
-    public void resetSet() {
+    private void resetSet() {
         s = new HashSet<>();
     }
     @Override
@@ -188,7 +188,7 @@ public class BSTMap<K extends Comparable<K>, V> implements Map61B<K, V> {
         return tmp;
     }
 
-    public int lr (BSTNode child, BSTNode parent) {
+    private int lr (BSTNode child, BSTNode parent) {
         if (parent.left != null) {
             if (parent.left.key.equals(child.key)) {
                 return 0;
@@ -197,7 +197,7 @@ public class BSTMap<K extends Comparable<K>, V> implements Map61B<K, V> {
         }
         return 1;
     }
-    public V removeNoNode(BSTNode noNode, BSTNode parNode) {
+    private V removeNoNode(BSTNode noNode, BSTNode parNode) {
         if (parNode == null) {
             root = null;
             return noNode.value;
@@ -210,7 +210,7 @@ public class BSTMap<K extends Comparable<K>, V> implements Map61B<K, V> {
         }
         return noNode.value;
     }
-    public V removeOneNode(BSTNode oneNode, BSTNode parNode) {
+    private V removeOneNode(BSTNode oneNode, BSTNode parNode) {
         if (parNode == null) {
             if (oneNode.left != null) {
                 root = oneNode.left;
@@ -237,7 +237,7 @@ public class BSTMap<K extends Comparable<K>, V> implements Map61B<K, V> {
         return oneNode.value;
     }
 
-    public V removeTwoNode(BSTNode twoNode, BSTNode parNode) {
+    private V removeTwoNode(BSTNode twoNode, BSTNode parNode) {
         BSTNode largestNode = twoNode.getLargest();
         if (parNode == null) {
             remove(largestNode.key);
@@ -258,7 +258,7 @@ public class BSTMap<K extends Comparable<K>, V> implements Map61B<K, V> {
         return twoNode.value;
     }
 
-    public void sizeMinus1(){
+    private void sizeMinus1(){
         size -= 1;
     }
     @Override
