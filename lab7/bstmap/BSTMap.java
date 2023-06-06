@@ -12,7 +12,7 @@ public class BSTMap<K extends Comparable<K>, V> implements Map61B<K, V> {
     private BSTNode root;
     private Set<K> s = new HashSet<>();
 
-    BSTMap() {
+    public BSTMap() {
         size = 0;
         root = null;
     }
@@ -30,7 +30,7 @@ public class BSTMap<K extends Comparable<K>, V> implements Map61B<K, V> {
             this.right = null;
         }
 
-        public BSTNode get(K key) {
+        BSTNode get(K key) {
             if (this.key.equals(key)) {
                 return this;
             } else {
