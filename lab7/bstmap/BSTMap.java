@@ -30,7 +30,7 @@ public class BSTMap<K extends Comparable<K>, V> implements Map61B<K, V> {
             this.right = null;
         }
 
-        BSTNode get(K key) {
+        public BSTNode get(K key) {
             if (this.key.equals(key)) {
                 return this;
             } else {
