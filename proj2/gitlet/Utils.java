@@ -14,9 +14,7 @@ import java.nio.file.Paths;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.Arrays;
-import java.util.Formatter;
-import java.util.List;
+import java.util.*;
 
 
 /** Assorted utilities.
@@ -63,6 +61,11 @@ class Utils {
         return sha1(vals.toArray(new Object[vals.size()]));
     }
 
+    static String sha1(File file) {
+        byte[] fileByte = readContents(file);
+        String sha = sha1(fileByte);
+        return sha;
+    }
     /* FILE DELETION */
 
     /** Deletes FILE if it exists and is not a directory.  Returns true
@@ -181,6 +184,14 @@ class Utils {
         }
     }
 
+    static Map<String, String> plainFileMapIn(File dir) {
+        Map<String, String> result = new TreeMap<>();
+        for (File file : dir.listFiles(PLAIN_FILES)) {
+            result.put(file.getName(), sha1(file));
+        }
+        return result;
+    }
+
     /** Returns a list of the names of all plain files in the directory DIR, in
      *  lexicographic order as Java Strings.  Returns null if DIR does
      *  not denote a directory. */
@@ -191,15 +202,18 @@ class Utils {
     /* OTHER FILE UTILITIES */
 
     /** Return the concatentation of FIRST and OTHERS into a File designator,
-     *  analogous to the {@link java.nio.file.Paths.#get(String, String[])}
+     *  analogous to the
+     *
      *  method. */
+    //{@link java.nio.file.Paths.#get(String, String[])}
     static File join(String first, String... others) {
         return Paths.get(first, others).toFile();
     }
 
     /** Return the concatentation of FIRST and OTHERS into a File designator,
-     *  analogous to the {@link java.nio.file.Paths.#get(String, String[])}
+     *  analogous to the
      *  method. */
+    //{@link java.nio.file.Paths.#get(String, String[])}
     static File join(File first, String... others) {
         return Paths.get(first.getPath(), others).toFile();
     }
