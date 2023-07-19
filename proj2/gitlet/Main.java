@@ -12,7 +12,7 @@ public class Main {
     /** Usage: java gitlet.Main ARGS, where ARGS contains
      *  <COMMAND> <OPERAND1> <OPERAND2> ... 
      */
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) {
         // TODO: what if args is empty?
         if (args.length == 0) {
             System.out.println("Please enter a command.");
@@ -23,25 +23,41 @@ public class Main {
             case "init":
                 // TODO: handle the `init` command
                 validateNumArgs("init", args, 1);
-                Repository.init();
+                try {
+                    Repository.init();
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
                 break;
             case "add":
                 // TODO: handle the `add [filename]` command
                 validInit();
                 validateNumArgs("add", args, 2);
-                add(args[1]);
+                try {
+                    add(args[1]);
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
                 break;
             case "commit":
                 // TODO: handle the 'commit [message]' command
                 validInit();
                 validateNumArgs("commit", args, 2);
-                Commit.makeNewCommit(args[1]);
+                try {
+                    Commit.makeNewCommit(args[1]);
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
                 break;
             case "rm":
                 // TODO: handle the 'rm [file name]' command
                 validInit();
                 validateNumArgs("rm", args, 2);
-                Staging_Area.rm(args[1]);
+                try {
+                    Staging_Area.rm(args[1]);
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
                 break;
             case "log":
                 // TODO: handle the 'log' command
@@ -72,15 +88,26 @@ public class Main {
                 // TODO: handle the 'checkout [commit id] -- [file name]' command
                 // TODO: handle the 'checkout [branch name]' command
                 validInit();
-                Repository.checkout(args);
+                try {
+                    Repository.checkout(args);
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
                 break;
             case "branch":
                 // TODO: handle the 'branch [branch name]' command
                 validInit();
+                validateNumArgs("branch", args, 2);
+                try {
+                    Branch.creatNewBranch(args[1]);
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
                 break;
             case "rm-branch":
                 // TODO: handle the 'rm-branch [branch name]' command
                 validInit();
+
                 break;
             case "reset":
                 // TODO: handle the 'reset [commit id]' command

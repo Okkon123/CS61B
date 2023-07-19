@@ -23,6 +23,14 @@ public class Branch {
     }
 
     /**
+     * 创建新的分支并且新的分支指向HEAD指向的Commit
+     * @param newBranchName
+     */
+    public static void creatNewBranch(String newBranchName) throws IOException {
+        creatBranch(newBranchName, headBranch());
+    }
+
+    /**
      * 更新HEAD指向的Branch
      * @param branchName
      */
@@ -30,7 +38,7 @@ public class Branch {
         writeContents(HEAD, branchName);
     }
     /**
-     * 返回HEAD存储的sha
+     * 返回HEAD指向的Commit的sha
      * @return
      */
     public static String headBranch() {
@@ -84,4 +92,6 @@ public class Branch {
         }
         return null;
     }
+
+
 }
