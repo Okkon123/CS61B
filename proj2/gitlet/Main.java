@@ -48,11 +48,13 @@ public class Main {
                 validInit();
                 validateNumArgs("log", args, 1);
                 Commit.log();
+                break;
             case "global-log":
                 // TODO: handle the 'global-log' command
                 validInit();
                 validateNumArgs("global-log", args, 1);
                 Commit.global_log();
+                break;
             case "find":
                 // TODO: handle the 'find [commit message]' command
                 validInit();

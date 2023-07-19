@@ -5,6 +5,7 @@ package gitlet;
 import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -27,7 +28,7 @@ public class Commit implements Serializable {
     public static final File COMMITS_DIR = join(Repository.GITLET_DIR, "commits");
     /** The message of this Commit. */
     private String message;
-    private String date;
+    private Date date;
     private List<String> parent;
     private TreeMap<String, String> blobs;
 
@@ -36,17 +37,23 @@ public class Commit implements Serializable {
 
     Commit() {
         this.message = "initial commit";
-        this.date = "00:00:00 UTC, Thursday, 1 January 1970";
+        this.date = new Date(0);
         this.parent = null;
         this.blobs = new TreeMap<>();
     }
 
     Commit(String message, String parentSha, Commit oldCommit) {
         this.message = message;
-        this.date = now();
+        this.date = new Date();
         this.parent = new ArrayList<>();
         this.parent.add(parentSha);
         this.blobs = new TreeMap<>((Map<String, String>) oldCommit.blobs);
+    }
+
+    public String getTimestamp() {
+        // Thu Jan 1 00:00:00 1970 +0000
+        DateFormat dateFormat = new SimpleDateFormat("EEE MMM d HH:mm:ss yyyy Z", Locale.ENGLISH);
+        return dateFormat.format(date);
     }
 
     /**
@@ -222,7 +229,7 @@ public class Commit implements Serializable {
         if (this.parent == null ||this.parent.size() == 1) {            // 非merge节点
             System.out.println("===");
             System.out.println("commit " + currentCommitSha);
-            System.out.println("Date " + this.date);
+            System.out.println("Date: " + this.getTimestamp());
             System.out.println(this.message);
             System.out.println();
         } else {                                                        // merge节点
@@ -232,7 +239,7 @@ public class Commit implements Serializable {
             for (String s : this.parent) {
                 System.out.print(" " + s.substring(0, 6));
             }
-            System.out.println("Date " + this.date);
+            System.out.println("Date: " + this.getTimestamp());
             System.out.println(this.message);
             System.out.println();
         }
