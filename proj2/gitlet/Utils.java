@@ -66,6 +66,16 @@ class Utils {
         String sha = sha1(fileByte);
         return sha;
     }
+
+    static String sha1(Commit commit) {
+        File file = new File("temp");
+        writeObject(file, commit);
+        String sha = sha1(file);
+        if (file.exists()){
+            file.delete();
+        }
+        return sha;
+    }
     /* FILE DELETION */
 
     /** Deletes FILE if it exists and is not a directory.  Returns true

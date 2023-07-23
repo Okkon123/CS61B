@@ -107,15 +107,27 @@ public class Main {
             case "rm-branch":
                 // TODO: handle the 'rm-branch [branch name]' command
                 validInit();
-
+                validateNumArgs("rm-branch", args, 2);
+                Branch.removeBranch(args[1]);
                 break;
             case "reset":
                 // TODO: handle the 'reset [commit id]' command
                 validInit();
+                try {
+                    Repository.reset(args[1]);
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
                 break;
             case "merge":
                 // TODO: handle the 'merge [branch name]' command
                 validInit();
+                validateNumArgs("merge", args, 2);
+                try {
+                    Repository.merge(args[1]);
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
                 break;
             case "add-remote":
                 // TODO: handle the 'add-remote [remote name] [name of remote directory]/.gitlet' command

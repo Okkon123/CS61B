@@ -50,6 +50,52 @@ public class Commit implements Serializable {
         this.blobs = new TreeMap<>((Map<String, String>) oldCommit.blobs);
     }
 
+    Commit(String message, List<String> parentSha, Commit oldCommit) {
+        this.message = message;
+        this.date = new Date();
+        this.parent = new ArrayList<>();
+        this.parent.addAll(parentSha);
+        this.blobs = new TreeMap<>((Map<String, String>) oldCommit.blobs);
+    }
+    public static Commit getSpiltCommit(Commit headCommit, Commit branchCommit) {
+        List<String> headCommitParentShaList = new ArrayList<>();
+        List<Commit> headCommitParentCommitList = new ArrayList<>();
+        headCommitParentShaList.add(sha1(headCommit));
+        headCommitParentCommitList.add(headCommit);
+        List<String> parentList = headCommit.parent;
+        while (!parentList.isEmpty()) {
+            Commit parentCommit = getCommitBySha(parentList.get(0));
+            headCommitParentShaList.add(parentList.get(0));
+            headCommitParentCommitList.add(parentCommit);
+            parentList = parentCommit.parent;
+            if (parentList == null) {
+                break;
+            }
+        }
+        String branchCommitSha = sha1(branchCommit);
+        for (int i = 0; i < headCommitParentShaList.size(); i += 1) {
+            if (headCommitParentShaList.get(i).equals(branchCommitSha)) {
+                Commit result = headCommitParentCommitList.get(i);
+                return result;
+            }
+        }
+        parentList = branchCommit.parent;
+        while (!parentList.isEmpty()) {
+            for (int i = 0; i < headCommitParentShaList.size(); i += 1) {
+                if (headCommitParentShaList.get(i).equals(parentList.get(0))) {
+                    Commit result = headCommitParentCommitList.get(i);
+                    return result;
+                }
+            }
+            Commit parentCommit = getCommitBySha(parentList.get(0));
+            parentList = parentCommit.parent;
+            if (parentCommit.parent == null) {
+                break;
+            }
+        }
+        return null;
+    }
+
     public String getTimestamp() {
         // Thu Jan 1 00:00:00 1970 +0000
         DateFormat dateFormat = new SimpleDateFormat("EEE MMM d HH:mm:ss yyyy Z", Locale.ENGLISH);
@@ -62,9 +108,10 @@ public class Commit implements Serializable {
      * @throws IOException
      */
     public String saveCommit() throws IOException {
-        File tmp = new File("tmp");
+        File tmp = new File("tm");
         writeObject(tmp, this);
         String sha = sha1(tmp);
+        tmp.delete();
         File newCommit = join(COMMITS_DIR, sha);
         writeObject(newCommit, this);
         newCommit.createNewFile();
@@ -143,6 +190,26 @@ public class Commit implements Serializable {
         Branch.updateBranch(newCommitSha);                                      //更新当前Branch指向的提交
     }
 
+    public static void makeNewCommit(String message, List<String> parent) throws IOException {
+        Staging_Area stageState = Staging_Area.readStageState();                //读取stageState
+        if (stageState.isStageEmpty()) {                                        //检查暂存情况，若无文件被暂存则报错推出
+            System.out.println("No changes added to the commit.");
+            System.exit(0);
+        }
+        if (!validMessage(message)) {                                           //检查message是否为空白字符串，若为空白字符串则报错推出
+            System.out.println("Please enter a commit message.");
+            System.exit(0);
+        }
+        Commit headCommit = readHeadCommit();                                   //读取HEAD所指的Commit
+        String headSha = Branch.headBranch();                                   //读取headCommit的sha
+        Commit newCommit = new Commit(message, parent, headCommit);            //创建新的Commit
+        newCommit.updateAddition(stageState.getAddition());                     //遍历stageState.addition, 更新newCommit.blobs
+        newCommit.updateRemoval(stageState.getRemoval());                       //遍历stageState.removal, 更新newCommit.blobs
+        stageState.clearStage();                                                //清空暂存区
+        stageState.saveStageState();                                            //保存stageState
+        String newCommitSha = newCommit.saveCommit();                           //保存newCommit
+        Branch.updateBranch(newCommitSha);                                      //更新当前Branch指向的提交
+    }
     /**
      * message 正确性验证
      * @param message
@@ -213,6 +280,14 @@ public class Commit implements Serializable {
         if (sha == null) {
             return null;
         }
+        if (sha.length() < 40 && sha.length() >= 6) {
+            Commit commit = getCommitByPrefixSha(sha);
+            if (commit != null) {
+                return commit;
+            }
+            System.out.println("Please enter a longer id.");
+            return null;
+        }
         for (File file : COMMITS_DIR.listFiles()) {
             if (file.getName().equals(sha)) {
                 return readObject(file, Commit.class);
@@ -221,12 +296,27 @@ public class Commit implements Serializable {
         return null;
     }
 
+    private static Commit getCommitByPrefixSha(String commitPrefix) {
+        for (File file : COMMITS_DIR.listFiles()) {
+            boolean fix = true;
+            for (int i = 0; i < commitPrefix.length(); i++) {
+                if (file.getName().charAt(i) != commitPrefix.charAt(i)) {
+                    fix = false;
+                    break;
+                }
+            }
+            if (fix) {
+                return readObject(file, Commit.class);
+            }
+        }
+        return null;
+    }
     /**
      * 打印当前Commit信息
      * @param currentCommitSha
      */
     public void printLogInfo(String currentCommitSha) {
-        if (this.parent == null ||this.parent.size() == 1) {            // 非merge节点
+        if (this.parent == null || this.parent.size() == 1) {            // 非merge节点
             System.out.println("===");
             System.out.println("commit " + currentCommitSha);
             System.out.println("Date: " + this.getTimestamp());
@@ -237,8 +327,9 @@ public class Commit implements Serializable {
             System.out.println("commit " + currentCommitSha);
             System.out.print("Merge:");
             for (String s : this.parent) {
-                System.out.print(" " + s.substring(0, 6));
+                System.out.print(" " + s.substring(0, 7));
             }
+            System.out.println();
             System.out.println("Date: " + this.getTimestamp());
             System.out.println(this.message);
             System.out.println();
@@ -287,33 +378,8 @@ public class Commit implements Serializable {
         }
     }
 
-    public void checkout() {
-
-    }
-
-    public void reset() {
-
-    }
-
     public String getMessage() {
         return message;
-    }
-
-    public void merge() {
-
-    }
-
-    /**
-     * 返回字符串形式的当前时间
-     * @return
-     */
-    private String now() {
-        Date now = new Date();
-        // 设置日期格式
-        SimpleDateFormat formatter = new SimpleDateFormat("HH:mm:ss 'UTC,' EEEE, d MMMM yyyy");
-        formatter.setTimeZone(TimeZone.getTimeZone("UTC"));
-        // 格式化时间
-        return formatter.format(now);
     }
 
     /**
@@ -325,6 +391,11 @@ public class Commit implements Serializable {
         return blobs.containsKey(fileName);
     }
 
+    /**
+     * 返回文件名为fileName的Blob
+     * @param fileName
+     * @return
+     */
     public File blobInCommit(String fileName) {
         String blobSha = blobs.get(fileName);
         if (blobSha == null) {
@@ -342,7 +413,28 @@ public class Commit implements Serializable {
         return blobs.entrySet();
     }
 
+    /**
+     * 返回Blobs中sha的Set视图
+     * @return
+     */
     public Set<String> fileNameInBlob() {
         return blobs.keySet();
+    }
+
+    public static boolean validateCommitId(String commitId) {
+        for (File file : Commit.COMMITS_DIR.listFiles()) {
+            if (file.getName().equals(commitId)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public String fileShaInBlobs(String fileName) {
+        return blobs.get(fileName);
+    }
+
+    public String getBlobShaByName(String fileName) {
+        return blobs.get(fileName);
     }
 }

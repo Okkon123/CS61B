@@ -72,13 +72,13 @@ public class Staging_Area implements Serializable{
     public static void add(String fileName) throws IOException {
         File file = Repository.weatherFileExit(fileName);                   //是否存在此文件
         if (file == null) {                                                 //若不存在，则报错退出
-            System.out.println("File does not exit.");
+            System.out.println("File does not exist.");
             System.exit(0);
         }
         String sha = sha1(file);                                            //获取文件夹中文件的sha1
         Staging_Area stageState = Staging_Area.readStageState();            //读取stageState
         String removalSha =  stageState.removal.get(fileName);              //查询removal中是否存在fileName的映射，若存在则删除
-        if (removalSha != null) {
+        if (removalSha != null ) {
             stageState.removal.remove(fileName);
         }
         Commit headCommit = Commit.readHeadCommit();                        //获取HEAD所指的Commit
@@ -119,23 +119,19 @@ public class Staging_Area implements Serializable{
             System.out.println("No reason to remove the file.");    // 此文件不存在暂存添加区并且在当前的Commit中未被跟踪，报错并退出
             System.exit(0);
         }
+        File deleteFile = join(Repository.CWD, fileName);
+        String deleteFileSha;
+        if (deleteFile.exists()) {
+            deleteFileSha = sha1(deleteFile);
+        } else {
+            deleteFileSha = headCommit.fileShaInBlobs(fileName);
+        }
         stageState.addition.remove(fileName);                       // 将此文件从暂存添加区删除
         if (headCommit.fileExitInCommit(fileName)) {                // 若此文件在Commit中被跟踪，则将其添加到暂存删除区在当前目录下删除此文件
-            stageState.removal.put(fileName, null);
+            stageState.removal.put(fileName, deleteFileSha);
             restrictedDelete(fileName);
         }
         stageState.saveStageState();
-    }
-
-
-
-
-    public static void removeStating() {
-
-    }
-
-    public static void remove() {
-
     }
 
     public TreeMap<String, String> getAddition() {

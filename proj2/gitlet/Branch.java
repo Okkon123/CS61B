@@ -27,6 +27,12 @@ public class Branch {
      * @param newBranchName
      */
     public static void creatNewBranch(String newBranchName) throws IOException {
+        for (File file : BRANCHES_DIR.listFiles()) {
+            if (file.getName().equals(newBranchName)) {
+                System.out.println("A branch with that name already exists.");
+                System.exit(0);
+            }
+        }
         creatBranch(newBranchName, headBranch());
     }
 
@@ -60,10 +66,28 @@ public class Branch {
     public static String headBranchName() {
         return readContentsAsString(HEAD);
     }
-    public static void removeBranch() {
-
+    public static void removeBranch(String branchName) {
+        if (!isBranchExit(branchName)) {
+            System.out.println("A branch with that name does not exist.");
+            System.exit(0);
+        }
+        if (branchName.equals(headBranchName())) {
+            System.out.println("Cannot remove the current branch.");
+            System.exit(0);
+        }
+        File targetBranch = join(BRANCHES_DIR, branchName);
+        targetBranch.delete();
     }
 
+    public static boolean isBranchExit(String branchName) {
+        boolean branchNotExit = false;
+        for (File file : BRANCHES_DIR.listFiles()) {
+            if (file.getName().equals(branchName)) {
+                branchNotExit = true;
+            }
+        }
+        return branchNotExit;
+    }
     /**
      * 更新当前HEAD指向的Branch,使其指向新的提交
      * @param newCommitSha
